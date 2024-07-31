@@ -1,5 +1,3 @@
-import { useLogin } from '@/app/hooks/authHooks';
-import Loader from '@/components/global/Loader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, Formik } from 'formik';
@@ -9,23 +7,28 @@ import * as Yup from 'yup';
 interface FormValues {
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 const validationSchema = Yup.object({
-  email: Yup.string().required('Email is required').email('Email incorrect'),
-  password: Yup.string().required('Password is required'),
+  email: Yup.string().required('Email is required').email('Invalid email'),
+  password: Yup.string()
+    .required('Password is required')
+    .min(8, 'Password must be at least 8 characters'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password')], 'Passwords dont match')
+    .required('Confirm password is required'),
 });
 
 const initalValues: FormValues = {
   email: '',
   password: '',
+  confirmPassword: '',
 };
 
-const LoginForm = () => {
-  const { mutate: login, isPending, isError, error } = useLogin();
-
+const SignUpForm = () => {
   const handleSubmit = async (values: FormValues) => {
-    await login(values);
+    console.log(values);
   };
 
   return (
@@ -34,13 +37,12 @@ const LoginForm = () => {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ getFieldProps }) => (
+      {({ getFieldProps, errors }) => (
         <Form className="flex flex-col w-full space-y-6 sm:justify-center sm:w-[400px]">
           <Input
             type="email"
             id="email"
             placeholder="Email"
-            disabled={isPending}
             {...getFieldProps('email')}
           />
 
@@ -51,19 +53,21 @@ const LoginForm = () => {
             {...getFieldProps('password')}
           />
 
-          <Button
-            type="submit"
-            className="w-full p-6"
-            size={'lg'}
-            disabled={isPending}
-          >
-            {isPending ? <Loader /> : 'Login'}
+          <Input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm Password"
+            {...getFieldProps('confirmPassword')}
+          />
+
+          <Button type="submit" className="w-full p-6" size={'lg'}>
+            Create Account
           </Button>
-          {isError && <div>{error.detail}</div>}
+          {JSON.stringify(errors)}
           <span className="self-center">
-            Dont have an account?{' '}
-            <NavLink to="/signup" className="text-primary">
-              Sign Up
+            Already have an account?{' '}
+            <NavLink to="/login" className="text-primary">
+              Login
             </NavLink>
           </span>
         </Form>
@@ -72,4 +76,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default SignUpForm;

@@ -13,7 +13,11 @@ const LoginPage = () => {
             cypress.
           </span>
         </NavLink>
+        <div className="mt-4 text-sm text-foreground/60">
+          An all-In-One Collaboration and Productivity Platform
+        </div>
       </div>
+
       <LoginForm />
     </div>
   );
