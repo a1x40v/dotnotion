@@ -1,3 +1,4 @@
+using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Application.Common.Security;
 using Microsoft.AspNetCore.Authorization;
@@ -42,7 +43,7 @@ public class IdentityService(
     {
         if (await userManager.Users.AnyAsync(x => x.Email == email))
         {
-            throw new Exception("Email is taken");
+            throw new AuthException("Email is taken");
         }
 
         var appUser = new ApplicationUser
@@ -55,7 +56,7 @@ public class IdentityService(
 
         if (!result.Succeeded)
         {
-            throw new Exception("Failed to register the user");
+            throw new AuthException("Failed to register the user");
         }
 
         return CreateAuthResult(appUser);
@@ -67,14 +68,14 @@ public class IdentityService(
 
         if (user == null)
         {
-            throw new Exception("Wrong email or password.");
+            throw new AuthException("Wrong email or password.");
         }
 
         var result = await userManager.CheckPasswordAsync(user, password);
 
         if (!result)
         {
-            throw new Exception("Wrong email or password.");
+            throw new AuthException("Wrong email or password.");
         }
 
         return CreateAuthResult(user);

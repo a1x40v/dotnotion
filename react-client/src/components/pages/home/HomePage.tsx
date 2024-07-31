@@ -39,8 +39,8 @@ const HomePage = () => {
             before:top-0 before:left-0 before:bottom-0 before:z-10 before:w-20
             before:bg-gradient-to-r before:dark:from-brand-dark before:from-background before:to-transparent"
         >
-          {[...Array(2)].map((arr) => (
-            <div key={arr} className="flex flex-nowrap animate-slide">
+          {[...Array(2)].map((_, idx) => (
+            <div key={idx} className="flex flex-nowrap animate-slide">
               {CLIENTS.map((client) => (
                 <div
                   key={client.alt}

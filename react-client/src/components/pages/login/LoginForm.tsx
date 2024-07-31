@@ -1,3 +1,7 @@
+import { useLogin } from '@/app/hooks/authHooks';
+import Loader from '@/components/global/Loader';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -17,8 +21,10 @@ const initalValues: FormValues = {
 };
 
 const LoginForm = () => {
+  const { mutate: login, isPending, isError, error } = useLogin();
+
   const handleSubmit = async (values: FormValues) => {
-    console.log(values);
+    await login(values);
   };
 
   return (
@@ -28,15 +34,34 @@ const LoginForm = () => {
       onSubmit={handleSubmit}
     >
       {({ getFieldProps }) => (
-        <Form>
-          <div>
-            <label htmlFor="email">Email</label>
-            <input type="text" id="email" {...getFieldProps('email')} />
-          </div>
-          <div>
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" {...getFieldProps('email')} />
-          </div>
+        <Form className="flex flex-col w-full space-y-6 sm:justify-center sm:w-[400px]">
+          <Input
+            type="email"
+            id="email"
+            placeholder="Email"
+            disabled={isPending}
+            {...getFieldProps('email')}
+          />
+
+          <Input
+            type="password"
+            id="password"
+            placeholder="Password"
+            {...getFieldProps('password')}
+          />
+
+          <Button
+            type="submit"
+            className="w-full p-6"
+            size={'lg'}
+            disabled={isPending}
+          >
+            {isPending ? <Loader /> : 'Login'}
+          </Button>
+          {isError && <div>{error.detail}</div>}
+          <span className="self-center">
+            Dont have an account? <a className="text-primary">Sign Up</a>
+          </span>
         </Form>
       )}
     </Formik>

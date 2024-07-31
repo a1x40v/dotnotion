@@ -8,6 +8,8 @@ builder.Services.AddWebApiServices();
 
 var app = builder.Build();
 
+app.UseCors("CorsPolicy");
+
 app.UseExceptionHandler(options => { });
 
 // Configure the HTTP request pipeline.
