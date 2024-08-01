@@ -6,7 +6,7 @@ namespace WebApi.Controllers;
 
 public class AccountsController : ApiControllerBase
 {
-    [HttpPost("register")]
+    [HttpPost("signup")]
     public async Task<IActionResult> Register(CreateUserCommand command)
     {
         var authResult = await Mediator.Send(command);

@@ -3,7 +3,7 @@ import apiClient from '../axios';
 import { useBoundStore } from '../store/store';
 import { ProblemDetails } from '../types';
 
-interface LoginParams {
+interface AuthParams {
   email: string;
   password: string;
 }
@@ -13,8 +13,11 @@ interface AuthResponse {
   jwtToken: string;
 }
 
-const login = async (loginParams: LoginParams): Promise<AuthResponse> => {
-  const response = await apiClient.post('/accounts/login', loginParams);
+const authenticate = async (
+  url: string,
+  authParams: AuthParams
+): Promise<AuthResponse> => {
+  const response = await apiClient.post(url, authParams);
   const storeLogin = useBoundStore.getState().login;
   storeLogin(response.data.userId, response.data.jwtToken);
 
@@ -22,7 +25,15 @@ const login = async (loginParams: LoginParams): Promise<AuthResponse> => {
 };
 
 export const useLogin = () => {
-  return useMutation<AuthResponse, ProblemDetails, LoginParams>({
-    mutationFn: login,
+  return useMutation<AuthResponse, ProblemDetails, AuthParams>({
+    mutationFn: (authParams: AuthParams) =>
+      authenticate('/accounts/login', authParams),
+  });
+};
+
+export const useSignUp = () => {
+  return useMutation<AuthResponse, ProblemDetails, AuthParams>({
+    mutationFn: (authParams: AuthParams) =>
+      authenticate('/accounts/signup', authParams),
   });
 };

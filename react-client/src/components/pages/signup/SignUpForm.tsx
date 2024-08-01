@@ -1,3 +1,5 @@
+import { useSignUp } from '@/app/hooks/authHooks';
+import Loader from '@/components/global/Loader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, Formik } from 'formik';
@@ -27,8 +29,10 @@ const initalValues: FormValues = {
 };
 
 const SignUpForm = () => {
+  const { mutate: signUp, isPending, isError, error } = useSignUp();
+
   const handleSubmit = async (values: FormValues) => {
-    console.log(values);
+    await signUp(values);
   };
 
   return (
@@ -37,7 +41,7 @@ const SignUpForm = () => {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ getFieldProps, errors }) => (
+      {({ getFieldProps, dirty, isValid, touched, errors }) => (
         <Form className="flex flex-col w-full space-y-6 sm:justify-center sm:w-[400px]">
           <Input
             type="email"
@@ -45,6 +49,9 @@ const SignUpForm = () => {
             placeholder="Email"
             {...getFieldProps('email')}
           />
+          {errors.email && touched.email ? (
+            <p className="text-red-700">{errors.email}</p>
+          ) : null}
 
           <Input
             type="password"
@@ -52,6 +59,9 @@ const SignUpForm = () => {
             placeholder="Password"
             {...getFieldProps('password')}
           />
+          {errors.password && touched.password ? (
+            <p className="text-red-700">{errors.password}</p>
+          ) : null}
 
           <Input
             type="password"
@@ -59,11 +69,18 @@ const SignUpForm = () => {
             placeholder="Confirm Password"
             {...getFieldProps('confirmPassword')}
           />
+          {errors.confirmPassword && touched.confirmPassword ? (
+            <p className="text-red-700">{errors.confirmPassword}</p>
+          ) : null}
 
-          <Button type="submit" className="w-full p-6" size={'lg'}>
-            Create Account
+          <Button
+            type="submit"
+            className="w-full p-6"
+            size={'lg'}
+            disabled={isPending || !dirty || !isValid}
+          >
+            {isPending ? <Loader /> : 'Create Account'}
           </Button>
-          {JSON.stringify(errors)}
           <span className="self-center">
             Already have an account?{' '}
             <NavLink to="/login" className="text-primary">
